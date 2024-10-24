@@ -354,6 +354,7 @@
 -analyzer:"D:/Unity Editor/2022.3.48f1/Editor/Data/Tools/Unity.SourceGenerators/Unity.SourceGenerators.dll"
 "Assets/Scripts/GroundSpawner.cs"
 "Assets/Scripts/PlayerMovement.cs"
+"Assets/Scripts/TitleScreen.cs"
 -langversion:9.0
 /deterministic
 /optimize+

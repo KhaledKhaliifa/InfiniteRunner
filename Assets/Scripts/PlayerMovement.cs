@@ -18,6 +18,8 @@ public class PlayerMovement : MonoBehaviour
 
     [SerializeField] TMP_Text fuelText;
 
+    bool Die = false;
+
     int score;
     int fuel;
     float fuelTime;
@@ -45,11 +47,13 @@ public class PlayerMovement : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-
-        MovePlayer();
-        UpdateSpeed();
-        UpdateScore();
-        UpdateFuel();
+        if (!Die)
+        {
+            MovePlayer();
+            UpdateSpeed();
+            UpdateScore();
+            UpdateFuel();
+        }
         
     }
     void MovePlayer()
@@ -82,6 +86,10 @@ public class PlayerMovement : MonoBehaviour
         {
             Jump();
 
+        }
+        if(rb.position.y < 0)
+        {
+            Die = true;
         }
     }
 
@@ -126,6 +134,10 @@ public class PlayerMovement : MonoBehaviour
             {
                 forwardSpeed /= 2;
             }
+        }
+        else if (collision.gameObject.CompareTag("Wall"))
+        {
+            Die = true;
         }
 
     }

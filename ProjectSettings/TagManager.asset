@@ -13,6 +13,7 @@ TagManager:
   - Obstacle
   - SpeedText
   - ScoreText
+  - Wall
   layers:
   - Default
   - TransparentFX
