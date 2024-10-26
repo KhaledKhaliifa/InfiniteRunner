@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 
 public class PlayerMovement : MonoBehaviour
@@ -18,13 +19,16 @@ public class PlayerMovement : MonoBehaviour
 
     [SerializeField] TMP_Text fuelText;
 
+    [SerializeField] TMP_Text invincibilityText;
+
     bool Die = false;
 
-    int score;
+    public static int score;
     int fuel;
     float fuelTime;
     float scoreTime;
     string playerSpeed;
+    bool isInvincible = false;
 
     Rigidbody rb;
 
@@ -53,6 +57,11 @@ public class PlayerMovement : MonoBehaviour
             UpdateSpeed();
             UpdateScore();
             UpdateFuel();
+            CheatCheck();
+        }
+        else
+        {
+            SceneManager.LoadScene("GameOver");
         }
         
     }
@@ -76,7 +85,7 @@ public class PlayerMovement : MonoBehaviour
         {
             horizontalMove = transform.right * x * horizontalSpeed * Time.fixedDeltaTime;
         }
-        
+
         // Initiating movement 
         rb.MovePosition(rb.position + horizontalMove + forwardMove);
 
@@ -105,6 +114,69 @@ public class PlayerMovement : MonoBehaviour
         }
         
     }
+    void CheatCheck()
+    {
+        ////////////////////// CHEATS RELATED FUNCTION //////////////////////
+        
+        // INVINCIBILITY CHEAT
+        
+        if (isInvincible)
+        {
+            if (Input.GetKeyDown(KeyCode.U))
+            {
+                isInvincible = false;
+                invincibilityText.text = "";
+            }
+            else
+            {
+                GameObject[] obstacles = GameObject.FindGameObjectsWithTag("Wall");
+                foreach (GameObject obstacle in obstacles)
+                {
+                    BoxCollider boxcollider = obstacle.GetComponent<BoxCollider>();
+                    if (boxcollider != null)
+                    {
+                        boxcollider.enabled = false;
+                    }
+                }
+            }
+        }
+        else
+        {
+            if (Input.GetKeyDown(KeyCode.U))
+            {
+                isInvincible = true;
+                invincibilityText.text = "Invincible";
+            }
+            else
+            {
+                GameObject[] obstacles = GameObject.FindGameObjectsWithTag("Wall");
+                foreach( GameObject obstacle in obstacles){
+                    if (obstacle != null)
+                    {
+                        BoxCollider boxcollider = obstacle.GetComponent<BoxCollider>();
+                        if(boxcollider != null)
+                        {
+                            boxcollider.enabled = true;
+                        }
+                    }
+                }
+            }
+           
+        }
+
+
+        // SPEED CHEAT
+        if (Input.GetKeyDown(KeyCode.H))
+        {
+            forwardSpeed /= 2;
+        }
+
+        // FUEL CHEAT
+        if (Input.GetKeyDown(KeyCode.F))
+        {
+            fuel = 50;
+        }
+    }
     private void OnCollisionEnter(Collision collision)
     {
         ////////////////////// COLLISION RELATED FUNCTION //////////////////////
@@ -123,7 +195,7 @@ public class PlayerMovement : MonoBehaviour
         }
         else if (collision.gameObject.CompareTag("BoostTile"))
         {
-            if(forwardSpeed == 10.0f)
+            if(forwardSpeed != 20.0f)
             {
                 forwardSpeed *= 2;
             }
@@ -137,7 +209,10 @@ public class PlayerMovement : MonoBehaviour
         }
         else if (collision.gameObject.CompareTag("Wall"))
         {
-            Die = true;
+            if (!isInvincible)
+            {
+                Die = true;
+            }
         }
 
     }
@@ -180,6 +255,10 @@ public class PlayerMovement : MonoBehaviour
         {
             fuelTime = 0;
             fuel -= 1;
+        }
+        if(fuel <= 0)
+        {
+            Die = true;
         }
         fuelText.text = "Fuel: " + fuel.ToString();
     }

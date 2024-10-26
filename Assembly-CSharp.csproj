@@ -61,7 +61,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Scripts\TitleScreen.cs" />
+    <Compile Include="Assets\Scripts\GameOverScreen.cs" />
     <Compile Include="Assets\Scripts\GroundSpawner.cs" />
+    <Compile Include="Assets\Scripts\OptionsScreen.cs" />
     <Compile Include="Assets\Scripts\PlayerMovement.cs" />
   </ItemGroup>
   <ItemGroup>
