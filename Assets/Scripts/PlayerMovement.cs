@@ -21,6 +21,8 @@ public class PlayerMovement : MonoBehaviour
 
     [SerializeField] TMP_Text invincibilityText;
 
+    [SerializeField] TMP_Text fallText;
+
     bool Die = false;
 
     public static int score;
@@ -29,6 +31,7 @@ public class PlayerMovement : MonoBehaviour
     float scoreTime;
     string playerSpeed;
     bool isInvincible = false;
+    bool canFall = true;
 
     Rigidbody rb;
 
@@ -175,6 +178,52 @@ public class PlayerMovement : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.F))
         {
             fuel = 50;
+        }
+
+        // FALL CHEAT
+        if (canFall)
+        {
+            if (Input.GetKeyDown(KeyCode.G))
+            {
+                canFall = false;
+                fallText.text = "";
+            }
+            else
+            {
+                GameObject[] emptyTiles = GameObject.FindGameObjectsWithTag("EmptyTile");
+                foreach (GameObject tile in emptyTiles)
+                {
+                    BoxCollider boxcollider = tile.GetComponent<BoxCollider>();
+                    if (boxcollider != null)
+                    {
+                        boxcollider.enabled = true;
+                    }
+                }
+            }
+        }
+        else
+        {
+            if (Input.GetKeyDown(KeyCode.G))
+            {
+                canFall = true;
+                fallText.text = "No Fall";
+            }
+            else
+            {
+                GameObject[] emptyTiles = GameObject.FindGameObjectsWithTag("EmptyTile");
+                foreach (GameObject tile in emptyTiles)
+                {
+                    if (tile != null)
+                    {
+                        BoxCollider boxcollider = tile.GetComponent<BoxCollider>();
+                        if (boxcollider != null)
+                        {
+                            boxcollider.enabled = false;
+                        }
+                    }
+                }
+            }
+
         }
     }
     private void OnCollisionEnter(Collision collision)
