@@ -70,6 +70,7 @@ public class GroundSpawner : MonoBehaviour
 
     private void Start()
     {
+        PauseMenu.isPaused = false;
 
         for (int i = 0; i < 5; i++)
         {

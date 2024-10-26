@@ -4,6 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
+using static Unity.VisualScripting.Member;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -23,6 +24,11 @@ public class PlayerMovement : MonoBehaviour
 
     [SerializeField] TMP_Text fallText;
 
+    public AudioClip jump, slow, wall, refill, burn, invalid, fall, boost;
+
+    public AudioSource audioSource;
+
+
     bool Die = false;
 
     public static int score;
@@ -32,6 +38,8 @@ public class PlayerMovement : MonoBehaviour
     string playerSpeed;
     bool isInvincible = false;
     bool canFall = true;
+    bool falling = false;
+    bool reachedBoundary = false;
 
     Rigidbody rb;
 
@@ -45,8 +53,7 @@ public class PlayerMovement : MonoBehaviour
         fuelTime = 0;
         score = 0;
         scoreTime = 0;
-        rb = this.gameObject.GetComponent<Rigidbody>();
-
+        rb = this.gameObject.GetComponent<Rigidbody>();        
     }
 
     void Update()
@@ -60,7 +67,6 @@ public class PlayerMovement : MonoBehaviour
                 UpdateScore();
                 UpdateFuel();
                 CheatCheck();
-                PauseCheck();
             }
             else
             {
@@ -84,10 +90,21 @@ public class PlayerMovement : MonoBehaviour
         if (x > 0 && rb.position.x < 8.4)
         {
             horizontalMove = transform.right * x * horizontalSpeed * Time.fixedDeltaTime;
+            reachedBoundary = false;
         }
         else if (x < 0 && rb.position.x > -8.4)
         {
             horizontalMove = transform.right * x * horizontalSpeed * Time.fixedDeltaTime;
+            reachedBoundary = false;
+        }
+        else if(x != 0)
+        {
+            if (!reachedBoundary)
+            {
+                playInvalid();
+            }
+            reachedBoundary = true;
+            
         }
 
         // Initiating movement 
@@ -102,10 +119,15 @@ public class PlayerMovement : MonoBehaviour
         }
         if(rb.position.y < -4)
         {
-            Die = true;
+            isGrounded = false;
+            if (!falling)
+            {
+                StartCoroutine(fallCoroutine());
+            }
+            falling = true;
         }
     }
-
+   
     void Jump()
     {
         ////////////////////// JUMP RELATED FUNCTION //////////////////////
@@ -115,6 +137,10 @@ public class PlayerMovement : MonoBehaviour
         {
             rb.AddForce(Vector3.up * jumpForce);
             isGrounded = false;
+        }
+        else
+        {
+            playInvalid();
         }
         
     }
@@ -130,29 +156,35 @@ public class PlayerMovement : MonoBehaviour
         if (collision.gameObject.CompareTag("BurningTile"))
         {
             fuel -= 10;
+            playBurn();
         }
         else if (collision.gameObject.CompareTag("SuppliesTile"))
         {
             fuel = 50;
+            playRefill();
         }
         else if (collision.gameObject.CompareTag("BoostTile"))
         {
             if(forwardSpeed != 10.0)
             {
                 forwardSpeed *= 2;
+                playBoost();
             }
         }
         else if (collision.gameObject.CompareTag("StickyTile"))
         {
-            if(forwardSpeed == 10.0)
+            if (forwardSpeed == 10.0)
             {
                 forwardSpeed /= 2;
+                playSlow();
+                
             }
         }
         else if (collision.gameObject.CompareTag("Wall"))
         {
             if (!isInvincible)
             {
+                StartCoroutine(wallCorotuine());
                 Die = true;
             }
         }
@@ -314,11 +346,59 @@ public class PlayerMovement : MonoBehaviour
 
         }
     }
-    private void PauseCheck()
+    public void playJump()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-
-        }
+        audioSource.clip = jump;
+        audioSource.Play();
     }
+    public void playSlow()
+    {
+        audioSource.clip = slow;
+        audioSource.Play();
+    }
+    public void playRefill()
+    {
+        audioSource.clip = refill;
+        audioSource.Play();
+    }
+    public void playWall()
+    {
+        audioSource.clip = wall;
+        audioSource.PlayOneShot(audioSource.clip, 1.4f);
+    }
+    public void playBoost()
+    {
+        audioSource.clip = boost;
+        audioSource.Play();
+    }
+    public void playFall()
+    {
+        audioSource.clip = fall;
+        audioSource.PlayOneShot(audioSource.clip);
+
+    }
+    public void playInvalid()
+    {
+        audioSource.clip = invalid;
+        audioSource.PlayOneShot(audioSource.clip);
+    }
+    public void playBurn()
+    {
+        audioSource.clip = burn;
+        audioSource.Play();
+    }
+
+    IEnumerator fallCoroutine()
+    {
+        playFall();
+        yield return new WaitForSeconds(audioSource.clip.length);
+        Die = true;
+    }
+    IEnumerator wallCorotuine()
+    {
+        playWall();
+        yield return new WaitForSeconds(audioSource.clip.length);
+        Die = true;
+    }
+
 }

@@ -7,11 +7,14 @@ using UnityEngine.SceneManagement;
 public class OptionsScreen : MonoBehaviour
 {
     [SerializeField] TMP_Text muteText;
+    public GameObject optionsScreen;
+    public GameObject titleScreen;
     bool isMuted = false;
 
     public void BackToTitle()
     {
-        SceneManager.LoadScene("TitleScreen");
+        titleScreen.SetActive(true);
+        optionsScreen.SetActive(false);
     }
     public void Mute()
     {

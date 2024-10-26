@@ -5,13 +5,16 @@ using UnityEngine.SceneManagement;
 
 public class TitleScreen : MonoBehaviour
 {
+    public GameObject titleScreen;
+    public GameObject optionsScreen;
     public void StartGame()
     {
         SceneManager.LoadScene("GameScene");
     }
     public void ToOptionsScreen()
     {
-        SceneManager.LoadScene("OptionsScreen");
+        titleScreen.SetActive(false);
+        optionsScreen.SetActive(true);
     }
     public void QuitGame()
     {
