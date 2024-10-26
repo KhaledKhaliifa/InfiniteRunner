@@ -355,6 +355,7 @@
 "Assets/Scripts/GameOverScreen.cs"
 "Assets/Scripts/GroundSpawner.cs"
 "Assets/Scripts/OptionsScreen.cs"
+"Assets/Scripts/PauseMenu.cs"
 "Assets/Scripts/PlayerMovement.cs"
 "Assets/Scripts/TitleScreen.cs"
 -langversion:9.0

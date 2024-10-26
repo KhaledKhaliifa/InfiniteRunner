@@ -51,8 +51,6 @@ public class GroundSpawner : MonoBehaviour
                 break;
             case 15:
             case 16:
-            case 17:
-            case 18:
                 instantiatedTile = Instantiate(obstacle, nextSpawnPoint, Quaternion.identity);
                 break;
             default:
@@ -84,25 +82,29 @@ public class GroundSpawner : MonoBehaviour
         }
     }
 
-    private void FixedUpdate()
+    private void Update()
     {
-        int random_number = Random.Range(1, 32); 
-
-        if (activeTiles.Count > 0)
+        if (!PauseMenu.isPaused)
         {
-            // Get the last tile
-            GameObject lastTile = activeTiles[0];
-            float tileEndZ = lastTile.transform.position.z + lastTile.transform.localScale.z;
+            int random_number = Random.Range(1, 32); 
 
-            // Check if the player's z position is greater than the tile's end position
-            if (Player.transform.position.z > tileEndZ + 2)
+            if (activeTiles.Count > 0)
             {
-                Destroy(activeTiles[0]); // Destroy the first tile that the player has passed
-                activeTiles.RemoveAt(0); // Remove it from the list
+                // Get the last tile
+                GameObject lastTile = activeTiles[0];
+                float tileEndZ = lastTile.transform.position.z + lastTile.transform.localScale.z;
 
-                // Spawn a new tile at the end of the path
-                SpawnTile(random_number);
+                // Check if the player's z position is greater than the tile's end position
+                if (Player.transform.position.z > tileEndZ + 2)
+                {
+                    Destroy(activeTiles[0]); // Destroy the first tile that the player has passed
+                    activeTiles.RemoveAt(0); // Remove it from the list
+
+                    // Spawn a new tile at the end of the path
+                    SpawnTile(random_number);
+                }
             }
+
         }
     }
 }

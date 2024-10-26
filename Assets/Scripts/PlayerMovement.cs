@@ -37,12 +37,10 @@ public class PlayerMovement : MonoBehaviour
 
     bool isGrounded = true;
 
-    // Start is called before the first frame update
     void Start()
     {
-        //Debug.Log("Start");
-        forwardSpeed = 10.0f;
-        horizontalSpeed = 15.0f;
+        forwardSpeed = 5.0f;
+        horizontalSpeed = 10.0f;
         fuel = 50;
         fuelTime = 0;
         score = 0;
@@ -51,20 +49,23 @@ public class PlayerMovement : MonoBehaviour
 
     }
 
-    // Update is called once per frame
-    void FixedUpdate()
+    void Update()
     {
-        if (!Die)
+        if (!PauseMenu.isPaused)
         {
-            MovePlayer();
-            UpdateSpeed();
-            UpdateScore();
-            UpdateFuel();
-            CheatCheck();
-        }
-        else
-        {
-            SceneManager.LoadScene("GameOver");
+            if (!Die)
+            {
+                MovePlayer();
+                UpdateSpeed();
+                UpdateScore();
+                UpdateFuel();
+                CheatCheck();
+                PauseCheck();
+            }
+            else
+            {
+                SceneManager.LoadScene("GameOver");
+            }
         }
         
     }
@@ -99,7 +100,7 @@ public class PlayerMovement : MonoBehaviour
             Jump();
 
         }
-        if(rb.position.y < 0)
+        if(rb.position.y < -4)
         {
             Die = true;
         }
@@ -117,115 +118,7 @@ public class PlayerMovement : MonoBehaviour
         }
         
     }
-    void CheatCheck()
-    {
-        ////////////////////// CHEATS RELATED FUNCTION //////////////////////
-        
-        // INVINCIBILITY CHEAT
-        
-        if (isInvincible)
-        {
-            if (Input.GetKeyDown(KeyCode.U))
-            {
-                isInvincible = false;
-                invincibilityText.text = "";
-            }
-            else
-            {
-                GameObject[] obstacles = GameObject.FindGameObjectsWithTag("Wall");
-                foreach (GameObject obstacle in obstacles)
-                {
-                    BoxCollider boxcollider = obstacle.GetComponent<BoxCollider>();
-                    if (boxcollider != null)
-                    {
-                        boxcollider.enabled = false;
-                    }
-                }
-            }
-        }
-        else
-        {
-            if (Input.GetKeyDown(KeyCode.U))
-            {
-                isInvincible = true;
-                invincibilityText.text = "Invincible";
-            }
-            else
-            {
-                GameObject[] obstacles = GameObject.FindGameObjectsWithTag("Wall");
-                foreach( GameObject obstacle in obstacles){
-                    if (obstacle != null)
-                    {
-                        BoxCollider boxcollider = obstacle.GetComponent<BoxCollider>();
-                        if(boxcollider != null)
-                        {
-                            boxcollider.enabled = true;
-                        }
-                    }
-                }
-            }
-           
-        }
 
-
-        // SPEED CHEAT
-        if (Input.GetKeyDown(KeyCode.H))
-        {
-            forwardSpeed /= 2;
-        }
-
-        // FUEL CHEAT
-        if (Input.GetKeyDown(KeyCode.F))
-        {
-            fuel = 50;
-        }
-
-        // FALL CHEAT
-        if (canFall)
-        {
-            if (Input.GetKeyDown(KeyCode.G))
-            {
-                canFall = false;
-                fallText.text = "";
-            }
-            else
-            {
-                GameObject[] emptyTiles = GameObject.FindGameObjectsWithTag("EmptyTile");
-                foreach (GameObject tile in emptyTiles)
-                {
-                    BoxCollider boxcollider = tile.GetComponent<BoxCollider>();
-                    if (boxcollider != null)
-                    {
-                        boxcollider.enabled = true;
-                    }
-                }
-            }
-        }
-        else
-        {
-            if (Input.GetKeyDown(KeyCode.G))
-            {
-                canFall = true;
-                fallText.text = "No Fall";
-            }
-            else
-            {
-                GameObject[] emptyTiles = GameObject.FindGameObjectsWithTag("EmptyTile");
-                foreach (GameObject tile in emptyTiles)
-                {
-                    if (tile != null)
-                    {
-                        BoxCollider boxcollider = tile.GetComponent<BoxCollider>();
-                        if (boxcollider != null)
-                        {
-                            boxcollider.enabled = false;
-                        }
-                    }
-                }
-            }
-
-        }
-    }
     private void OnCollisionEnter(Collision collision)
     {
         ////////////////////// COLLISION RELATED FUNCTION //////////////////////
@@ -244,14 +137,14 @@ public class PlayerMovement : MonoBehaviour
         }
         else if (collision.gameObject.CompareTag("BoostTile"))
         {
-            if(forwardSpeed != 20.0f)
+            if(forwardSpeed != 10.0)
             {
                 forwardSpeed *= 2;
             }
         }
         else if (collision.gameObject.CompareTag("StickyTile"))
         {
-            if(forwardSpeed == 20.0f)
+            if(forwardSpeed == 10.0)
             {
                 forwardSpeed /= 2;
             }
@@ -284,7 +177,7 @@ public class PlayerMovement : MonoBehaviour
         ////////////////////// SPEED RELATED FUNCTION //////////////////////
 
         // Changing the speed text in the ui
-        if (forwardSpeed == 10.0f)
+        if (forwardSpeed == 5.0f)
         {
             playerSpeed = "Normal";
         }
@@ -310,5 +203,122 @@ public class PlayerMovement : MonoBehaviour
             Die = true;
         }
         fuelText.text = "Fuel: " + fuel.ToString();
+    }
+    void CheatCheck()
+    {
+        ////////////////////// CHEATS RELATED FUNCTION //////////////////////
+
+        // INVINCIBILITY CHEAT
+
+        if (isInvincible)
+        {
+            if (Input.GetKeyDown(KeyCode.U))
+            {
+                isInvincible = false;
+                invincibilityText.text = "";
+            }
+            else
+            {
+                GameObject[] obstacles = GameObject.FindGameObjectsWithTag("Wall");
+                foreach (GameObject obstacle in obstacles)
+                {
+                    BoxCollider boxcollider = obstacle.GetComponent<BoxCollider>();
+                    if (boxcollider != null)
+                    {
+                        boxcollider.enabled = false;
+                    }
+                }
+            }
+        }
+        else
+        {
+            if (Input.GetKeyDown(KeyCode.U))
+            {
+                isInvincible = true;
+                invincibilityText.text = "Invincible";
+            }
+            else
+            {
+                GameObject[] obstacles = GameObject.FindGameObjectsWithTag("Wall");
+                foreach (GameObject obstacle in obstacles)
+                {
+                    if (obstacle != null)
+                    {
+                        BoxCollider boxcollider = obstacle.GetComponent<BoxCollider>();
+                        if (boxcollider != null)
+                        {
+                            boxcollider.enabled = true;
+                        }
+                    }
+                }
+            }
+
+        }
+
+
+        // SPEED CHEAT
+        if (Input.GetKeyDown(KeyCode.H))
+        {
+            forwardSpeed /= 2;
+        }
+
+        // FUEL CHEAT
+        if (Input.GetKeyDown(KeyCode.F))
+        {
+            fuel = 50;
+        }
+
+        // FALL CHEAT
+        if (canFall)
+        {
+            if (Input.GetKeyDown(KeyCode.G))
+            {
+                canFall = false;
+                fallText.text = "No Fall";
+            }
+            else
+            {
+                GameObject[] emptyTiles = GameObject.FindGameObjectsWithTag("EmptyTile");
+                foreach (GameObject tile in emptyTiles)
+                {
+                    BoxCollider boxcollider = tile.GetComponent<BoxCollider>();
+                    if (boxcollider != null)
+                    {
+                        boxcollider.enabled = false;
+                    }
+                }
+            }
+        }
+        else
+        {
+            if (Input.GetKeyDown(KeyCode.G))
+            {
+                canFall = true;
+                fallText.text = "";
+            }
+            else
+            {
+                GameObject[] emptyTiles = GameObject.FindGameObjectsWithTag("EmptyTile");
+                foreach (GameObject tile in emptyTiles)
+                {
+                    if (tile != null)
+                    {
+                        BoxCollider boxcollider = tile.GetComponent<BoxCollider>();
+                        if (boxcollider != null)
+                        {
+                            boxcollider.enabled = true;
+                        }
+                    }
+                }
+            }
+
+        }
+    }
+    private void PauseCheck()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+
+        }
     }
 }
