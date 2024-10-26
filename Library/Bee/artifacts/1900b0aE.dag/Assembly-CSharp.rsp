@@ -357,7 +357,6 @@
 "Assets/Scripts/OptionsScreen.cs"
 "Assets/Scripts/PauseMenu.cs"
 "Assets/Scripts/PlayerMovement.cs"
-"Assets/Scripts/SoundManager.cs"
 "Assets/Scripts/TitleScreen.cs"
 -langversion:9.0
 /deterministic

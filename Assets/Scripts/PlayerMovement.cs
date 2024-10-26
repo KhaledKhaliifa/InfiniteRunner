@@ -28,22 +28,22 @@ public class PlayerMovement : MonoBehaviour
 
     public AudioSource audioSource;
 
-
-    bool Die = false;
-
     public static int score;
-    int fuel;
+    float fuel;
     float fuelTime;
     float scoreTime;
     string playerSpeed;
+
+    bool Die = false;
     bool isInvincible = false;
     bool canFall = true;
     bool falling = false;
     bool reachedBoundary = false;
+    bool isGrounded = true;
+    bool isInBurningTile = false;
 
     Rigidbody rb;
 
-    bool isGrounded = true;
 
     void Start()
     {
@@ -117,14 +117,18 @@ public class PlayerMovement : MonoBehaviour
             Jump();
 
         }
-        if(rb.position.y < -4)
+        if(rb.position.y < 0)
         {
             isGrounded = false;
-            if (!falling)
+            if(rb.position.y < -3)
             {
-                StartCoroutine(fallCoroutine());
+                if (!falling)
+                {
+                    StartCoroutine(fallCoroutine());
+                }
+                falling = true;
+
             }
-            falling = true;
         }
     }
    
@@ -155,8 +159,12 @@ public class PlayerMovement : MonoBehaviour
         // Writing the logic for every tile
         if (collision.gameObject.CompareTag("BurningTile"))
         {
-            fuel -= 10;
-            playBurn();
+            if (!isInBurningTile) // Check if not already in the area
+            {
+                isInBurningTile = true;
+                playBurn();
+            }
+            
         }
         else if (collision.gameObject.CompareTag("SuppliesTile"))
         {
@@ -190,6 +198,14 @@ public class PlayerMovement : MonoBehaviour
         }
 
     }
+    private void OnCollisionExit(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("BurningTile"))
+        {
+            isInBurningTile = false;
+        }
+    }
+
     private void UpdateScore()
     {        
         ////////////////////// SCORE RELATED FUNCTION //////////////////////
@@ -234,7 +250,12 @@ public class PlayerMovement : MonoBehaviour
         {
             Die = true;
         }
-        fuelText.text = "Fuel: " + fuel.ToString();
+        if (isInBurningTile)
+        {
+            fuel = fuel - Time.deltaTime * 10;
+        }
+        
+        fuelText.text = "Fuel: " + ((int)fuel).ToString();
     }
     void CheatCheck()
     {
@@ -291,7 +312,10 @@ public class PlayerMovement : MonoBehaviour
         // SPEED CHEAT
         if (Input.GetKeyDown(KeyCode.H))
         {
-            forwardSpeed /= 2;
+            if(forwardSpeed != 8.0)
+            {
+                forwardSpeed /= 2;
+            }
         }
 
         // FUEL CHEAT
